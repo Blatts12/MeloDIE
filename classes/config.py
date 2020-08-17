@@ -14,7 +14,7 @@ paths = dict(
 player = dict(
     volume_start=30,
     volume_step=1,
-    volume_max=500,
+    volume_max=120,
 )
 
 window = dict(
