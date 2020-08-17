@@ -27,7 +27,7 @@ class Playlist:
         self.fileList = Filelist(Fm.getFileExtList(self.path))
         self.indexPlaying = -1
         self.indexLimit = 0
-        self.loopSong = 2  # -1 = inf
+        self.loopSong = 0  # -1 = inf
         if prepareInfo == False:
             return
         self.prepareInfo()
@@ -51,20 +51,30 @@ class Playlist:
 
     def setLoop(self, loop):
         ''' -1 = inf '''
-        self.loopSong = loop
-        if self.indexPlaying == -1:
-            self.indexPlaying = 0
+        if loop == -2:
+            self.loopSong = -1
+            return -1
+        elif loop == 0:
+            self.loopSong = loop
+            return 0
+        else:
+            self.loopSong += loop
+            if self.loopSong < 0:
+                self.loopSong = 0
+
+            return self.loopSong
 
     def shuffle(self):
         random.shuffle(self.songs)
         self.indexPlaying = -1
         self.loopSong = 0
 
-    def _getReturnDict(self, index, loop, filename):
+    def _getReturnDict(self, index, loop, filename, title):
         return dict(
             index=index,
             loop=loop,
             filename=filename,
+            title=title,
             path=self.path,
         )
 
@@ -74,14 +84,14 @@ class Playlist:
             self.indexPlaying = (newIndex, 0)[newIndex >= self.indexLimit]
 
         if self.loopSong == -1:  # inf loop
-            return self._getReturnDict(self.indexPlaying, "inf", self.songs[self.indexPlaying].getFilename())
+            return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
         elif self.loopSong > 0:  # loop
             self.loopSong -= 1
-            return self._getReturnDict(self.indexPlaying, str(self.loopSong), self.songs[self.indexPlaying].getFilename())
+            return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
         else:  # no loop
-            return self._getReturnDict(self.indexPlaying, "no", self.songs[self.indexPlaying].getFilename())
+            return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
 
     def playSongAtIndex(self, index):
         self.loopSong = 0
         self.indexPlaying = index
-        return self._getReturnDict(self.indexPlaying, "no", self.songs[self.indexPlaying].getFilename())
+        return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)

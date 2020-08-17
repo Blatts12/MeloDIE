@@ -14,6 +14,7 @@ class Player:
         self.volumeMax = config.player["volume_max"]
 
         self.Instance._set_property("volume", float(self.volume))
+        self.Instance.pause = False
 
     def volumeUp(self):
         if self.volume == self.volumeMax:
