@@ -91,6 +91,16 @@ class Playlist:
         else:  # no loop
             return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
 
+    def playPreviousSongSimple(self):
+        newIndex = self.indexPlaying - 1
+        self.indexPlaying = (newIndex, self.indexLimit - 1)[newIndex < 0]
+        return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
+
+    def playNextSongSimple(self):
+        newIndex = self.indexPlaying + 1
+        self.indexPlaying = (newIndex, 0)[newIndex >= self.indexLimit]
+        return self._getReturnDict(self.indexPlaying, self.loopSong, self.songs[self.indexPlaying].getFilename(), self.songs[self.indexPlaying].name)
+
     def playSongAtIndex(self, index):
         self.loopSong = 0
         self.indexPlaying = index

@@ -85,6 +85,11 @@ class MainWindow(QMainWindow):
             self.volume(True)
         elif key == Qt.Key_Minus:  # DOWN
             self.volume(False)
+        # Song
+        elif key == Qt.Key_D and (event.modifiers() & Qt.SHIFT):
+            self.forceNextSong()
+        elif key == Qt.Key_A and (event.modifiers() & Qt.SHIFT):
+            self.forcePreviousSong()
         # Seek
         elif key == Qt.Key_D:  # +1
             self.seek(1)
@@ -159,12 +164,33 @@ class MainWindow(QMainWindow):
             songLayout.loopLayout.setNewLoop(str(loop))
 
     def nextSong(self):
-        songDict = mainWindow.playlist.playNextSong()
+        songDict = mainWindow.playlist.playNextSongSimple()
+        self._setSong(songDict)
+
+    def previousSong(self):
+        songDict = mainWindow.playlist.playPreviousSongSimple()
+        self._setSong(songDict)
+
+    def _setSong(self, songDict):
         songListLayout.selectAtIndex(songDict["index"])
         path = songDict["path"] + "\\" + songDict["filename"]
         self.setLoopText(songDict["loop"])
         songLayout.songInfoLayout.setNewTitle(songDict["title"])
         Player.Instance.play(path)
+
+    def forceNextSong(self):
+        if self.playlist == None:
+            return
+        self.playlist.setLoop(0)
+        self.stopNumber -= 1
+        self.nextSong()
+
+    def forcePreviousSong(self):
+        if self.playlist == None:
+            return
+        self.playlist.setLoop(0)
+        self.stopNumber -= 1
+        self.previousSong()
 
     def ydlHook(self, d):
         if d["status"] == "downloading":
