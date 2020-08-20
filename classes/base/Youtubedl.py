@@ -1,5 +1,18 @@
+from __future__ import unicode_literals
 import youtube_dl
 import json
+
+
+class MyLogger(object):
+    def debug(self, msg):
+        pass
+
+    def warning(self, msg):
+        pass
+
+    def error(self, msg):
+        pass
+        # print(msg)
 
 
 class Youtubedl():
