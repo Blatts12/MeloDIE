@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-dbPath = str(Path.home()) + "\\" + "Music\\pls.db"
+dbPath = str(Path.home()) + "\\Music\\pls.db"
 
 
 class PlaylistDatabase():
