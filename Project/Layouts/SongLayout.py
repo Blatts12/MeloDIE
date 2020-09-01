@@ -79,6 +79,9 @@ class SongInfoLayout(QVBoxLayout):
         self._titleLabel.setWordWrap(True)
         self.addWidget(self._titleLabel)
 
+    def setTitle(self, title):
+        self._titleLabel.setText(title)
+
 
 class SongSliderLayout(QVBoxLayout):
     def __init__(self, *args, **kwargs):
@@ -139,7 +142,7 @@ class LoopLayout(QVBoxLayout):
         self.setAlignment(self._loopLabel, Qt.AlignCenter)
 
     def setNewLoop(self, loop):
-        self._loopLabel.setText("Loop: " + str(loop))
+        self._loopLabel.setText("Loop: " + loop)
 
 
 class PlayStateLayout(QVBoxLayout):

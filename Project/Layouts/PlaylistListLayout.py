@@ -75,6 +75,23 @@ class PlaylistListLayout(QVBoxLayout):
         self.listWidget.setCurrentRow(self.indexHighlighted)
         self.addWidget(self.listWidget)
 
+    def updatePlaylists(self, previousPlaylist):
+        self.listWidget.clear()
+        self.playlists = PlaylistDatabase.getPlaylists()
+
+        if (previousPlaylist == None):
+            for playlist in self.playlists:
+                PlaylistItem(playlist, self.listWidget)
+        else:
+            indexTemp = 0
+            for playlist in self.playlists:
+                PlaylistItem(playlist, self.listWidget)
+                if (playlist[2] == previousPlaylist.link):
+                    self.indexSelected = indexTemp
+                    self.listWidget.item(self.indexSelected).selectPlaylist()
+                indexTemp += 1
+        self.indexLimit = len(self.playlists)
+
     def highlightNext(self):
         nextIndex = self.indexHighlighted + 1
         if nextIndex >= self.indexLimit:
@@ -102,3 +119,9 @@ class PlaylistListLayout(QVBoxLayout):
         self.listWidget.item(self.indexSelected).selectPlaylist()
 
         return self.listWidget.item(self.indexSelected).playlist
+
+    def getHighlighted(self):
+        if self.indexLimit <= 0:
+            return None
+
+        return self.listWidget.item(self.indexHighlighted).playlist

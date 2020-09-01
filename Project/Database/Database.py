@@ -17,9 +17,17 @@ class PlaylistDatabase():
                 c.executemany(
                     "INSERT INTO Playlists (name, link) VALUES (?,?)", playlist)
                 conn.commit()
-                return True
             except:
-                return False
+                pass
+
+    def removePlaylist(self, link):
+        with sqlite3.connect("C:\Databases\pls.db") as conn:
+            try:
+                c = conn.cursor()
+                c.execute("DELETE FROM Playlists WHERE link=?", (link,))
+                conn.commit()
+            except:
+                pass
 
     def getPlaylists(self):
         with sqlite3.connect("C:\Databases\pls.db") as conn:

@@ -1,23 +1,26 @@
-from PySide2.QtCore import *
+import glob
 from youtube_dl.utils import sanitize_filename
-from ..Utils.FileChecker import FlieChecker
-from ..Utils.YoutubeDL import SongDownloader
+from PySide2.QtCore import *
+from PySide2.QtMultimedia import *
+from ..Utils.Downloader import *
 
 
-class SongContent:
-    def __init__(self, ytId, name, playlistPath, fsd):
-        self._fileChecker = FlieChecker()
-        self._fsd = fsd
-        self.youtubeId = ytId
+class Song:
+    def __init__(self, name, ytId, playlistPath, fsd):
+        self._finishSongDownload = fsd
+
         self.name = name
+        self.youtubeId = ytId
+
         self.downloaded = False
         self.error = False
+
         self.path = self._getFullPath(
             playlistPath, sanitize_filename(name).strip())
 
     def _getFullPath(self, playlistPath, sanitizedName):
         path = playlistPath + "\\" + sanitizedName
-        files = self._fileChecker.getFile(path)
+        files = glob.glob(path.replace("[", "[[]") + ".*")
         if files == []:
             return path
         else:
@@ -33,7 +36,7 @@ class SongContent:
             self.downloaded = True
             self.path += "." + info["ext"]
 
-        self._fsd(self)
+        self._finishSongDownload(self)
 
     def download(self, item, psd):
         threadpool = QThreadPool.globalInstance()
@@ -42,3 +45,6 @@ class SongContent:
         downloader.signals.finished.connect(
             lambda info: self.processDownloadedSong(info))
         threadpool.start(downloader)
+
+    def getMediaContent(self):
+        return QMediaContent(QUrl.fromLocalFile(self.path))

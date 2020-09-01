@@ -19,12 +19,18 @@ class SongItem(QListWidgetItem):
         self.setText(self.downloadLabel + self.labelText)
 
     def downloadProgress(self, percent):
-        self.downloadLabel = "{" + percent.strip() + "} "
-        self.setText(self.downloadLabel + self.labelText)
+        try:
+            self.downloadLabel = "{" + percent.strip() + "} "
+            self.setText(self.downloadLabel + self.labelText)
+        except RuntimeError:
+            pass
 
     def downloadComplete(self):
-        self.downloadLabel = ""
-        self.setText(self.downloadLabel + self.labelText)
+        try:
+            self.downloadLabel = ""
+            self.setText(self.downloadLabel + self.labelText)
+        except RuntimeError:
+            pass
 
 
 class SongListWidget(QListWidget):
