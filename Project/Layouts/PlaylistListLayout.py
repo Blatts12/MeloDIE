@@ -109,7 +109,7 @@ class PlaylistListLayout(QVBoxLayout):
         self.listWidget.setCurrentRow(self.indexHighlighted)
 
     def selectHighlighted(self):
-        if self.indexSelected == self.indexHighlighted:
+        if self.indexSelected == self.indexHighlighted or self.indexLimit == 0:
             return None
 
         if self.indexSelected != -1:
