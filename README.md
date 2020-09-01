@@ -3,12 +3,15 @@
 **Requirements**
 
 Python 3.8
+
 ```
 pip3 install youtube-dl
 pip3 install pyside2
+pip3 install qdarkstyle
 ```
 
 **Shortcuts**
+
 ```
 space - play/pause
 

@@ -40,42 +40,6 @@ class SongListWidget(QListWidget):
         font.setPixelSize(12)
         self.setFont(font)
         self.setFocusPolicy(Qt.NoFocus)
-        self.setStyleSheet("""
-            QListWidget {
-                background-color: #512C73;
-                border: none;
-                border-right: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            QListWidget::item:selected {
-                background-color: #422559;
-                color: white;
-                border-top: 1px solid rgba(255, 255, 255, 0.15);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            }
-            QScrollBar:horizontal {
-                background: #512C73;
-                height: 8px;
-            }
-
-            QScrollBar:vertical {
-                background: #512C73;
-                width: 8px;
-            }
-
-            QScrollBar::handle:horizontal, QScrollBar::handle:vertical {
-                background: #230339;
-            }
-
-            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal, QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-                background: none;
-            }
-
-            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal, QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
-                background: none;
-                border: none;
-            }
-        """)
 
 
 class SongListLayout(QVBoxLayout):

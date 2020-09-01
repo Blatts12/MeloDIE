@@ -12,9 +12,11 @@ class MyLabel(QLabel):
         self.setFont(font)
         self.setStyleSheet("""
             QLabel {
-                padding: 5px;
-                background-color: #512C73;
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                border: 1px solid #32414B;
+                border-radius: 4px;
+            }
+            QLabel:hover {
+                border: 1px solid #148CD2;
             }
         """)
 
@@ -26,36 +28,6 @@ class TimeSlider(QSlider):
         self.setMinimum(0)
         self.setMaximum(100)
         self.setValue(0)
-        self.setStyleSheet("""
-            QSlider {
-                min-height: 68px;
-                max-height: 68px;
-            }
-
-            QSlider::groove:horizontal {
-                border: 1px solid white;
-                height: 5px;
-                margin: 0 2px;
-            }
-
-            QSlider::handle:horizontal {
-                background: #241034;
-                border: 1px solid white;
-                width: 5px;
-                height: 26px;
-                margin: -6px -3px;
-            }
-
-            QSlider::sub-page:horizontal {
-                background: #422559;
-                border: 1px solid rgba(255, 255, 255, 0.15);
-            }
-
-            QSlider::add-page:horizontal {
-                background: #744997;
-                border: 1px solid rgba(255, 255, 255, 0.15);
-            }
-        """)
 
     def mousePressEvent(self, event):
         pass
@@ -90,13 +62,6 @@ class SongSliderLayout(QVBoxLayout):
 
         self.addWidget(self.timeSlider)
         self.setAlignment(self.timeSlider, Qt.AlignCenter)
-
-    # def setNewMax(self, max):
-    #     self._timeSlider.setValue(0)
-    #     self._timeSlider.setMaximum(max)
-
-    # def setNewValue(self, value):
-    #     self._timeSlider.setValue(value)
 
 
 class SongDurationLayout(QVBoxLayout):
