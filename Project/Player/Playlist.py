@@ -24,7 +24,7 @@ class Playlist:
         self.error = False
 
     def _setPath(self):
-        path = str(Path.home()) + "\\Music\\" + \
+        path = str(Path.home()) + "/Music/" + \
             sanitize_filename(self.name).strip()
 
         if not os.path.isdir(path):
