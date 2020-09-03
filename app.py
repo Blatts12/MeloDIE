@@ -14,9 +14,8 @@ from Project.Player.Playlist import *
 from Project.Player.MediaPlayer import *
 from Project.Database.Database import PlaylistDatabase
 
-
 if sys.platform == "win32":
-    myappid = "blatts1234.pyytplplayer.101"
+    myappid = u"blatts1234.pyytplplayer.101"
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 app = QApplication(sys.argv)
@@ -38,7 +37,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(QRect(left, top, width, height))
         self.setFixedSize(width, height)
         self.setWindowTitle("YT Playlist Player")
-        self.setWindowIcon(QIcon("logo.png"))
+        self.setWindowIcon(QIcon("./logo.png"))
 
         mainLayout.addLayout(playlistListLayout, 0, 0)
         mainLayout.addLayout(songLayout, 0, 1)
