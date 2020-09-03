@@ -20,7 +20,7 @@ space - play/pause
 - - volume down
 m - mute/unmute
 
-#Loop
+# Loop
 [ - loop down
 ] - loop up
 { - loop zero
