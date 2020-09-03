@@ -37,7 +37,8 @@ class MainWindow(QMainWindow):
         self.setGeometry(QRect(left, top, width, height))
         self.setFixedSize(width, height)
         self.setWindowTitle("YT Playlist Player")
-        self.setWindowIcon(QIcon("./logo.png"))
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        self.setWindowIcon(QIcon(dir_path + "/logo.png"))
 
         mainLayout.addLayout(playlistListLayout, 0, 0)
         mainLayout.addLayout(songLayout, 0, 1)
