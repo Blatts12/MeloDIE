@@ -2,7 +2,7 @@ import sys
 import re
 import qdarkstyle
 import ctypes
-from pynput import *
+from pynput import keyboard
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtMultimedia import *
@@ -59,6 +59,14 @@ class MainWindow(QMainWindow):
         self.defaultVolume = 30
         self.savedVolume = -1
         self.player = MediaPlayer(self.defaultVolume)
+
+        self.listener = keyboard.GlobalHotKeys({"<media_play_pause>": self.changePlayState,
+                                                "<media_volume_up>": lambda: self.volumeUp(self.volumeStep),
+                                                "<media_volume_down>": lambda: self.volumeDown(self.volumeStep),
+                                                "<media_volume_mute>": self.mute,
+                                                "<media_next>": self.nextSong,
+                                                "<media_previous>": self.prevSong})
+        self.listener.start()
 
         songLayout.volumeLayout.setNewVolume(self.defaultVolume)
         self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(
@@ -247,12 +255,12 @@ class MainWindow(QMainWindow):
         elif key == Qt.Key_S and (event.modifiers() & Qt.SHIFT):  # Shuffle
             self.shuffle()
         # Volume
-        elif key == Qt.Key_Plus:
-            self.volumeUp(self.volumeStep)
-        elif key == Qt.Key_Minus:
-            self.volumeDown(self.volumeStep)
-        elif key == Qt.Key_M:
-            self.mute()
+        # elif key == Qt.Key_Plus:
+        #     self.volumeUp(self.volumeStep)
+        # elif key == Qt.Key_Minus:
+        #     self.volumeDown(self.volumeStep)
+        # elif key == Qt.Key_M:
+        #     self.mute()
         # Loop
         elif key == Qt.Key_BraceRight:  # Down
             self.loopInf()
@@ -263,19 +271,17 @@ class MainWindow(QMainWindow):
         elif key == Qt.Key_BracketLeft:  # Inf
             self.loopDown()
         # Player
-        elif key == Qt.Key_Space:
-            self.changePlayState()
+        # elif key == Qt.Key_Space:
+        #     self.changePlayState()
         # Seek
-        elif key == Qt.Key_D and (event.modifiers() & Qt.SHIFT):  # +1s
-            self.seekNextSong()
-        elif key == Qt.Key_A and (event.modifiers() & Qt.SHIFT):  # -1s
-            self.seekPrevSong()
+        # elif key == Qt.Key_D and (event.modifiers() & Qt.SHIFT):  # +1s
+        #     self.seekNextSong()
+        # elif key == Qt.Key_A and (event.modifiers() & Qt.SHIFT):  # -1s
+        #     self.seekPrevSong()
         elif key == Qt.Key_D:  # +1s
             self.seek(1000)
         elif key == Qt.Key_A:  # -1s
             self.seek(-1000)
-
-        print(key)
 
     def nextSong(self, zeroLoop=False):
         loop, index, song = self.playlist.nextSong(zeroLoop)
@@ -302,12 +308,4 @@ class MainWindow(QMainWindow):
 
 
 mainWindow = MainWindow()
-
-threadpool = QThreadPool.globalInstance()
-hotkeys = GlobalHotkey()
-hotkeys.signals.changePlayState.connect(mainWindow.changePlayState)
-threadpool.start(hotkeys)
-
 app.exec_()
-
-keyboard.Listener.stop()
