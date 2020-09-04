@@ -2,7 +2,7 @@ import sys
 import re
 import qdarkstyle
 import ctypes
-from pynput import keyboard
+
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtMultimedia import *
@@ -13,6 +13,7 @@ from Project.Layouts.SongListLayout import *
 from Project.Layouts.SongLayout import *
 from Project.Player.Playlist import *
 from Project.Player.MediaPlayer import *
+from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Database.Database import PlaylistDatabase
 
 if sys.platform == "win32":
@@ -58,14 +59,6 @@ class MainWindow(QMainWindow):
         self.defaultVolume = 30
         self.savedVolume = -1
         self.player = MediaPlayer(self.defaultVolume)
-
-        self.listener = keyboard.GlobalHotKeys({"<media_play_pause>": self.changePlayState,
-                                                "<pause>++": lambda: self.volumeUp(self.volumeStep),
-                                                "<pause>+-": lambda: self.volumeDown(self.volumeStep),
-                                                "<pause>+*": self.mute,
-                                                "<media_next>": self.seekNextSong,
-                                                "<media_previous>": self.seekPrevSong})
-        self.listener.start()
 
         songLayout.volumeLayout.setNewVolume(self.defaultVolume)
         self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(
@@ -122,9 +115,8 @@ class MainWindow(QMainWindow):
         if temp == None:
             return
         self.selectedPlaylistName = temp[1]
-        playlist = Playlist(
-            temp[1], temp[2], self.finishPlaylistExtraction, self.finishSongDownload)
-        playlist.extractInfo()
+        playlist = Playlist(temp[1], temp[2])
+        playlist.extractInfo(self.finishPlaylistExtraction)
 
     def selectHighlightedSong(self):
         pack = songListLayout.selectHighlighted()
@@ -298,7 +290,8 @@ class MainWindow(QMainWindow):
 
     def playSong(self, song, songItem):
         if song.downloaded == False:
-            song.download(songItem, self.progressSongDownload)
+            song.download(songItem, self.progressSongDownload,
+                          self.finishSongDownload)
         else:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
@@ -307,4 +300,20 @@ class MainWindow(QMainWindow):
 
 
 mainWindow = MainWindow()
+
+threadpool = QThreadPool.globalInstance()
+hotkeys = GlobalHotkey()
+hotkeys.signals.changePlayState.connect(mainWindow.changePlayState)
+hotkeys.signals.nextSong.connect(mainWindow.seekNextSong)
+hotkeys.signals.prevSong.connect(mainWindow.seekPrevSong)
+hotkeys.signals.mute.connect(mainWindow.mute)
+hotkeys.signals.volumeUp.connect(
+    lambda: mainWindow.volumeUp(mainWindow.volumeStep))
+hotkeys.signals.volumeDown.connect(
+    lambda: mainWindow.volumeDown(mainWindow.volumeStep))
+threadpool.start(hotkeys)
+
+
 app.exec_()
+
+hotkeys.stop()

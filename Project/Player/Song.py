@@ -6,9 +6,7 @@ from ..Utils.Downloader import *
 
 
 class Song:
-    def __init__(self, name, ytId, playlistPath, fsd):
-        self._finishSongDownload = fsd
-
+    def __init__(self, name, ytId, playlistPath):
         self.name = name
         self.youtubeId = ytId
 
@@ -30,20 +28,19 @@ class Song:
     def getYoutubeLink(self):
         return "https://www.youtube.com/watch?v=" + self.youtubeId
 
-    def processDownloadedSong(self, info):
+    def processDownloadedSong(self, info, fsd):
         self.error = info["error"]
         if not self.error:
             self.downloaded = True
             self.path += "." + info["ext"]
+        fsd(self)
 
-        self._finishSongDownload(self)
-
-    def download(self, item, psd):
+    def download(self, item, psd, fsd):
         threadpool = QThreadPool.globalInstance()
         downloader = SongDownloader(self.path, self.getYoutubeLink())
         downloader.signals.progress.connect(lambda info: psd(item, info))
         downloader.signals.finished.connect(
-            lambda info: self.processDownloadedSong(info))
+            lambda info: self.processDownloadedSong(info, fsd))
         threadpool.start(downloader)
 
     def getMediaContent(self):

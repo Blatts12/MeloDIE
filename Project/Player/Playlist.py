@@ -8,10 +8,7 @@ from .Song import Song
 
 
 class Playlist:
-    def __init__(self, name, link, fpe, fsd):
-        self._finishPlaylistExtraction = fpe
-        self._finishSongDownload = fsd
-
+    def __init__(self, name, link):
         self.name = name
         self.link = link
         self.path = self._setPath()
@@ -88,22 +85,22 @@ class Playlist:
         else:
             return str(self.loop)
 
-    def processExtractedInfo(self, info):
+    def processExtractedInfo(self, info, fpe):
         self.error = info["error"]
 
         if not self.error:
             for entry in info["entries"]:
                 newSong = Song(
-                    entry["title"], entry["id"], self.path, self._finishSongDownload)
+                    entry["title"], entry["id"], self.path)
                 self.songs.append(newSong)
 
             self.indexLimit = len(self.songs)
 
-        self._finishPlaylistExtraction(self)
+        fpe(self)
 
-    def extractInfo(self):
+    def extractInfo(self, fpe):
         threadpool = QThreadPool.globalInstance()
         extractor = PlaylistInfoExtarctor(self.link)
         extractor.signals.finished.connect(
-            lambda info: self.processExtractedInfo(info))
+            lambda info: self.processExtractedInfo(info, fpe))
         threadpool.start(extractor)
