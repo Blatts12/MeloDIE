@@ -60,8 +60,8 @@ class MainWindow(QMainWindow):
         self.player = MediaPlayer(self.defaultVolume)
 
         self.listener = keyboard.GlobalHotKeys({"<media_play_pause>": self.changePlayState,
-                                                "<pause>+-": lambda: self.volumeUp(self.volumeStep),
-                                                "<pause>++": lambda: self.volumeDown(self.volumeStep),
+                                                "<pause>++": lambda: self.volumeUp(self.volumeStep),
+                                                "<pause>+-": lambda: self.volumeDown(self.volumeStep),
                                                 "<pause>+*": self.mute,
                                                 "<media_next>": self.seekNextSong,
                                                 "<media_previous>": self.seekPrevSong})
