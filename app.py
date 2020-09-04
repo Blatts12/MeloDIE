@@ -13,7 +13,6 @@ from Project.Layouts.SongListLayout import *
 from Project.Layouts.SongLayout import *
 from Project.Player.Playlist import *
 from Project.Player.MediaPlayer import *
-from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Database.Database import PlaylistDatabase
 
 if sys.platform == "win32":
@@ -282,6 +281,7 @@ class MainWindow(QMainWindow):
             self.seek(1000)
         elif key == Qt.Key_A:  # -1s
             self.seek(-1000)
+        print(key)
 
     def nextSong(self, zeroLoop=False):
         loop, index, song = self.playlist.nextSong(zeroLoop)
