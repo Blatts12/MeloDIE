@@ -60,11 +60,11 @@ class MainWindow(QMainWindow):
         self.player = MediaPlayer(self.defaultVolume)
 
         self.listener = keyboard.GlobalHotKeys({"<media_play_pause>": self.changePlayState,
-                                                "<media_volume_up>": lambda: self.volumeUp(self.volumeStep),
-                                                "<media_volume_down>": lambda: self.volumeDown(self.volumeStep),
-                                                "<media_volume_mute>": self.mute,
-                                                "<media_next>": self.nextSong,
-                                                "<media_previous>": self.prevSong})
+                                                "<pause>+-": lambda: self.volumeUp(self.volumeStep),
+                                                "<pause>++": lambda: self.volumeDown(self.volumeStep),
+                                                "<pause>+*": self.mute,
+                                                "<media_next>": self.seekNextSong,
+                                                "<media_previous>": self.seekPrevSong})
         self.listener.start()
 
         songLayout.volumeLayout.setNewVolume(self.defaultVolume)
@@ -281,7 +281,6 @@ class MainWindow(QMainWindow):
             self.seek(1000)
         elif key == Qt.Key_A:  # -1s
             self.seek(-1000)
-        print(key)
 
     def nextSong(self, zeroLoop=False):
         loop, index, song = self.playlist.nextSong(zeroLoop)
