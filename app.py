@@ -2,6 +2,7 @@ import sys
 import re
 import qdarkstyle
 import ctypes
+from pynput import *
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtMultimedia import *
@@ -12,6 +13,7 @@ from Project.Layouts.SongListLayout import *
 from Project.Layouts.SongLayout import *
 from Project.Player.Playlist import *
 from Project.Player.MediaPlayer import *
+from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Database.Database import PlaylistDatabase
 
 if sys.platform == "win32":
@@ -273,6 +275,8 @@ class MainWindow(QMainWindow):
         elif key == Qt.Key_A:  # -1s
             self.seek(-1000)
 
+        print(key)
+
     def nextSong(self, zeroLoop=False):
         loop, index, song = self.playlist.nextSong(zeroLoop)
         songItem = songListLayout.selectAtIndex(index)
@@ -298,4 +302,12 @@ class MainWindow(QMainWindow):
 
 
 mainWindow = MainWindow()
+
+threadpool = QThreadPool.globalInstance()
+hotkeys = GlobalHotkey()
+hotkeys.signals.changePlayState.connect(mainWindow.changePlayState)
+threadpool.start(hotkeys)
+
 app.exec_()
+
+keyboard.Listener.stop()
