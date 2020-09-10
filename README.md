@@ -2,7 +2,7 @@
 
 **Requirements**
 
-Python 3.8
+Python 3.8 64-bit
 
 ```
 pip3 install youtube-dl
@@ -11,7 +11,7 @@ pip3 install qdarkstyle
 pip3 install pynput
 ```
 
-**Shortcuts**
+**Shortcuts** outdated
 
 ```
 space - play/pause

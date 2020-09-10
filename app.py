@@ -1,4 +1,5 @@
 import sys
+import os
 import re
 import qdarkstyle
 import ctypes
@@ -7,12 +8,12 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtMultimedia import *
 from PySide2.QtCore import *
-from Project.Layouts.MainLayout import *
-from Project.Layouts.PlaylistListLayout import *
-from Project.Layouts.SongListLayout import *
-from Project.Layouts.SongLayout import *
-from Project.Player.Playlist import *
-from Project.Player.MediaPlayer import *
+from Project.Layouts.MainLayout import MainLayout
+from Project.Layouts.PlaylistListLayout import PlaylistListLayout
+from Project.Layouts.SongListLayout import SongListLayout
+from Project.Layouts.SongLayout import SongLayout
+from Project.Player.Playlist import Playlist
+from Project.Player.MediaPlayer import MediaPlayer
 from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Database.Database import PlaylistDatabase
 
