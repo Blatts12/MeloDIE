@@ -3,7 +3,6 @@ import os
 import re
 import qdarkstyle
 import ctypes
-
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtMultimedia import *
@@ -15,7 +14,8 @@ from Project.Layouts.SongLayout import SongLayout
 from Project.Player.Playlist import Playlist
 from Project.Player.MediaPlayer import MediaPlayer
 from Project.Utils.GlobalHotkey import GlobalHotkey
-from Project.Database.Database import PlaylistDatabase
+from Project.Utils.Extractor import PlaylistInfoExtarctor
+from Project.Database.Database import PlaylistDb
 
 if sys.platform == "win32":
     myappid = u"blatts1234.pyytplplayer.101"
@@ -57,13 +57,13 @@ class MainWindow(QMainWindow):
         self.playlist = None
 
         self.volumeStep = 1
+        self.volumeStepBig = 4
         self.defaultVolume = 30
         self.savedVolume = -1
         self.player = MediaPlayer(self.defaultVolume)
 
         songLayout.volumeLayout.setNewVolume(self.defaultVolume)
-        self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(
-            self.mediaStatusChanged)
+        self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(self.mediaStatusChanged)
         self.player.durationChanged.connect(self.updateDuration)
         self.player.positionChanged.connect(self.updatePosition)
 
@@ -92,8 +92,7 @@ class MainWindow(QMainWindow):
         if playlistInfo["error"]:
             return
 
-        PlaylistDatabase.addPlaylist(
-            playlistInfo["title"], "https://www.youtube.com/playlist?list=" + playlistInfo["id"])
+        PlaylistDb.addPlaylist(playlistInfo["title"], "https://www.youtube.com/playlist?list=" + playlistInfo["id"])
         playlistListLayout.updatePlaylists(self.playlist)
 
     def progressSongDownload(self, item, p):
@@ -172,6 +171,16 @@ class MainWindow(QMainWindow):
         if self.playlist == None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
+    
+    def loopSwitch(self):
+        if self.playlist == None:
+            return
+        if self.playlist.loop == -1:
+            songLayout.loopLayout.setNewLoop(self.playlist.loopNo())
+        else:
+            songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
+            
+        
 
     def shuffle(self):
         if self.playlist == None:
@@ -205,15 +214,13 @@ class MainWindow(QMainWindow):
 
     def addPlaylistFromClipboard(self):
         data = QApplication.clipboard().text()
-        idPattern = re.compile(
-            "https:\/\/www\.youtu.+list=(PL[0-9A-Za-z-_]{32})")
+        idPattern = re.compile(r"https:\/\/www\.youtu.+list=(PL[0-9A-Za-z-_]{32})")
         if idPattern.match(data) == None:
             return
 
         threadpool = QThreadPool.globalInstance()
         extractor = PlaylistInfoExtarctor(data)
-        extractor.signals.finished.connect(
-            lambda info: self.finishPlaylistAdding(info))
+        extractor.signals.finished.connect(lambda info: self.finishPlaylistAdding(info))
         threadpool.start(extractor)
 
     def removeHighlightedPlaylist(self):
@@ -221,7 +228,7 @@ class MainWindow(QMainWindow):
         if playlistTemp == None:
             return
 
-        PlaylistDatabase.removePlaylist(playlistTemp[2])
+        PlaylistDb.removePlaylist(playlistTemp[2])
         playlistListLayout.updatePlaylists(self.playlist)
 
     def keyPressEvent(self, event):
@@ -254,13 +261,13 @@ class MainWindow(QMainWindow):
         # elif key == Qt.Key_M:
         #     self.mute()
         # Loop
-        elif key == Qt.Key_BraceRight:  # Down
-            self.loopInf()
-        elif key == Qt.Key_BraceLeft:  # No
-            self.loopNo()
+        # elif key == Qt.Key_BraceRight:  # Inf
+        #     self.loopInf()
+        # elif key == Qt.Key_BraceLeft:  # No
+        #     self.loopNo()
         elif key == Qt.Key_BracketRight:  # Up
             self.loopUp()
-        elif key == Qt.Key_BracketLeft:  # Inf
+        elif key == Qt.Key_BracketLeft:  # Down
             self.loopDown()
         # Player
         # elif key == Qt.Key_Space:
@@ -291,8 +298,7 @@ class MainWindow(QMainWindow):
 
     def playSong(self, song, songItem):
         if song.downloaded == False:
-            song.download(songItem, self.progressSongDownload,
-                          self.finishSongDownload)
+            song.download(songItem, self.progressSongDownload, self.finishSongDownload)
         else:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
@@ -308,13 +314,13 @@ hotkeys.signals.changePlayState.connect(mainWindow.changePlayState)
 hotkeys.signals.nextSong.connect(mainWindow.seekNextSong)
 hotkeys.signals.prevSong.connect(mainWindow.seekPrevSong)
 hotkeys.signals.mute.connect(mainWindow.mute)
-hotkeys.signals.volumeUp.connect(
-    lambda: mainWindow.volumeUp(mainWindow.volumeStep))
-hotkeys.signals.volumeDown.connect(
-    lambda: mainWindow.volumeDown(mainWindow.volumeStep))
+hotkeys.signals.loopSwitch.connect(mainWindow.loopSwitch)
+hotkeys.signals.volumeUp.connect(lambda: mainWindow.volumeUp(mainWindow.volumeStep))
+hotkeys.signals.volumeDown.connect(lambda: mainWindow.volumeDown(mainWindow.volumeStep))
+hotkeys.signals.volumeUpBig.connect(lambda: mainWindow.volumeUp(mainWindow.volumeStepBig))
+hotkeys.signals.volumeDownBig.connect(lambda: mainWindow.volumeDown(mainWindow.volumeStepBig))
 threadpool.start(hotkeys)
 
 
 app.exec_()
-
 hotkeys.stop()

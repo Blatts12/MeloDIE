@@ -40,4 +40,4 @@ class PlaylistDatabase():
             return c.fetchall()
 
 
-PlaylistDatabase = PlaylistDatabase()
+PlaylistDb = PlaylistDatabase()

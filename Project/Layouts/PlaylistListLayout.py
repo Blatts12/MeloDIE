@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from PySide2.QtGui import *
-from ..Database.Database import PlaylistDatabase
+from ..Database.Database import PlaylistDb
 
 
 class PlaylistItem(QListWidgetItem):
@@ -29,7 +29,7 @@ class PlaylistListLayout(QVBoxLayout):
     def __init__(self, *args, **kwargs):
         super(PlaylistListLayout, self).__init__(*args, **kwargs)
         self.listWidget = PlaylistListWidget()
-        self.playlists = PlaylistDatabase.getPlaylists()
+        self.playlists = PlaylistDb.getPlaylists()
         for playlist in self.playlists:
             PlaylistItem(playlist, self.listWidget)
 
@@ -41,7 +41,7 @@ class PlaylistListLayout(QVBoxLayout):
 
     def updatePlaylists(self, previousPlaylist):
         self.listWidget.clear()
-        self.playlists = PlaylistDatabase.getPlaylists()
+        self.playlists = PlaylistDb.getPlaylists()
 
         if (previousPlaylist == None):
             for playlist in self.playlists:

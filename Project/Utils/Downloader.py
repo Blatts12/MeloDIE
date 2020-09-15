@@ -22,6 +22,7 @@ class SongDownloader(QRunnable):
             "format": "bestaudio",
             "outtmpl": self.path + ".%(ext)s",
             "progress_hooks": [self.signals.progress.emit],
+            "ratelimit": 512000
             # "quiet": True
         }
 
