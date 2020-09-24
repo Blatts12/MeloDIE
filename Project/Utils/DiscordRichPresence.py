@@ -3,8 +3,8 @@ from pypresence import Presence
 
 class DRP:
     def __init__(self):
-        self.playlist = "Brak"
-        self.title = "Brak"
+        self.playlist = "None"
+        self.title = "None"
         self.time = "00:00"
         self.playState = "Paused"
         self.DRP = Presence("758697932261425222")
