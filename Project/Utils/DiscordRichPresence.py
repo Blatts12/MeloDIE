@@ -33,5 +33,5 @@ class DRP:
         self.DRP.update(
             state=self.playState + ": " + str(self.time),
             details="[" + self.playlist + "] " + self.title,
-            large_image="logo",
+            large_image="logo2",
         )
