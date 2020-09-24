@@ -15,6 +15,7 @@ from Project.Player.Playlist import Playlist
 from Project.Player.MediaPlayer import MediaPlayer
 from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Utils.Extractor import PlaylistInfoExtarctor
+from Project.Utils.DiscordRichPresence import DRP
 from Project.Database.Database import PlaylistDb
 
 if sys.platform == "win32":
@@ -28,6 +29,7 @@ mainLayout = MainLayout()
 playlistListLayout = PlaylistListLayout()
 songLayout = SongLayout()
 songListLayout = SongListLayout()
+drp = DRP()
 
 
 class MainWindow(QMainWindow):
@@ -39,7 +41,7 @@ class MainWindow(QMainWindow):
         height = 300
         self.setGeometry(QRect(left, top, width, height))
         self.setFixedSize(width, height)
-        self.setWindowTitle("YT Playlist Player")
+        self.setWindowTitle("MeloDIE")
         dir_path = os.path.dirname(os.path.realpath(__file__))
         self.setWindowIcon(QIcon(dir_path + "/logo.png"))
 
@@ -63,9 +65,13 @@ class MainWindow(QMainWindow):
         self.player = MediaPlayer(self.defaultVolume)
 
         songLayout.volumeLayout.setNewVolume(self.defaultVolume)
-        self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(self.mediaStatusChanged)
+        self.player.mediaStatusChanged[QMediaPlayer.MediaStatus].connect(
+            self.mediaStatusChanged
+        )
         self.player.durationChanged.connect(self.updateDuration)
         self.player.positionChanged.connect(self.updatePosition)
+
+        drp.start()
 
     def mediaStatusChanged(self, status):
         if status == QMediaPlayer.EndOfMedia:
@@ -76,8 +82,9 @@ class MainWindow(QMainWindow):
         songLayout.songSliderLayout.timeSlider.setMaximum(duration)
 
     def updatePosition(self, position):
-        songLayout.songDurationLayout.setNewTime(position / 1000)
+        timeText = songLayout.songDurationLayout.setNewTime(position / 1000)
         songLayout.songSliderLayout.timeSlider.setValue(position)
+        drp.setTime(timeText)
 
     def finishPlaylistExtraction(self, playlist):
         if playlist.error:
@@ -87,12 +94,16 @@ class MainWindow(QMainWindow):
             self.playlist = playlist
             songListLayout.setSongList(self.playlist.songs)
             self.nextSong(zeroLoop=True)
+            drp.setPlaylist(self.playlist.name)
 
     def finishPlaylistAdding(self, playlistInfo):
         if playlistInfo["error"]:
             return
 
-        PlaylistDb.addPlaylist(playlistInfo["title"], "https://www.youtube.com/playlist?list=" + playlistInfo["id"])
+        PlaylistDb.addPlaylist(
+            playlistInfo["title"],
+            "https://www.youtube.com/playlist?list=" + playlistInfo["id"],
+        )
         playlistListLayout.updatePlaylists(self.playlist)
 
     def progressSongDownload(self, item, p):
@@ -107,6 +118,8 @@ class MainWindow(QMainWindow):
         elif song.name == self.selectedSongName:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
+            drp.setTitle(song.name)
+            drp.setPlayState("Playing")
             self.player.setMedia(song.getMediaContent())
             self.player.play()
 
@@ -136,11 +149,9 @@ class MainWindow(QMainWindow):
 
     def volumeDown(self, byValue):
         if self.savedVolume == -1:
-            songLayout.volumeLayout.setNewVolume(
-                self.player.volumeDown(byValue))
+            songLayout.volumeLayout.setNewVolume(self.player.volumeDown(byValue))
         else:
-            songLayout.volumeLayout.setNewVolume(
-                self.player.volumeDown(byValue))
+            songLayout.volumeLayout.setNewVolume(self.player.volumeDown(byValue))
 
     def mute(self):
         if self.savedVolume == -1:
@@ -171,7 +182,7 @@ class MainWindow(QMainWindow):
         if self.playlist == None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
-    
+
     def loopSwitch(self):
         if self.playlist == None:
             return
@@ -179,8 +190,6 @@ class MainWindow(QMainWindow):
             songLayout.loopLayout.setNewLoop(self.playlist.loopNo())
         else:
             songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
-            
-        
 
     def shuffle(self):
         if self.playlist == None:
@@ -207,9 +216,11 @@ class MainWindow(QMainWindow):
     def changePlayState(self):
         if self.player.state() == QMediaPlayer.PausedState:
             songLayout.playStateLayout.play()
+            drp.setPlayState("Playing")
             self.player.play()
         else:
             songLayout.playStateLayout.pause()
+            drp.setPlayState("Paused")
             self.player.pause()
 
     def addPlaylistFromClipboard(self):
@@ -302,6 +313,8 @@ class MainWindow(QMainWindow):
         else:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
+            drp.setTitle(song.name)
+            drp.setPlayState("Playing")
             self.player.setMedia(song.getMediaContent())
             self.player.play()
 
@@ -317,8 +330,12 @@ hotkeys.signals.mute.connect(mainWindow.mute)
 hotkeys.signals.loopSwitch.connect(mainWindow.loopSwitch)
 hotkeys.signals.volumeUp.connect(lambda: mainWindow.volumeUp(mainWindow.volumeStep))
 hotkeys.signals.volumeDown.connect(lambda: mainWindow.volumeDown(mainWindow.volumeStep))
-hotkeys.signals.volumeUpBig.connect(lambda: mainWindow.volumeUp(mainWindow.volumeStepBig))
-hotkeys.signals.volumeDownBig.connect(lambda: mainWindow.volumeDown(mainWindow.volumeStepBig))
+hotkeys.signals.volumeUpBig.connect(
+    lambda: mainWindow.volumeUp(mainWindow.volumeStepBig)
+)
+hotkeys.signals.volumeDownBig.connect(
+    lambda: mainWindow.volumeDown(mainWindow.volumeStepBig)
+)
 threadpool.start(hotkeys)
 
 

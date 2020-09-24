@@ -10,7 +10,8 @@ class MyLabel(QLabel):
         font = QFont()
         font.setPixelSize(17)
         self.setFont(font)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             QLabel {
                 border: 1px solid #32414B;
                 border-radius: 4px;
@@ -18,7 +19,8 @@ class MyLabel(QLabel):
             QLabel:hover {
                 border: 1px solid #148CD2;
             }
-        """)
+        """
+        )
 
 
 class TimeSlider(QSlider):
@@ -82,6 +84,7 @@ class SongDurationLayout(QVBoxLayout):
     def setNewTime(self, time):
         self._timeText = FileDownloader.format_seconds(time)
         self._timeLabel.setText(self._timeText + " / " + self._durationText)
+        return self._timeText
 
 
 class VolumeLayout(QVBoxLayout):
