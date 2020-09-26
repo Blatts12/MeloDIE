@@ -10,9 +10,10 @@ class SongDownloaderSignals(QObject):
 
 
 class SongDownloader(QRunnable):
-    def __init__(self, path, link):
+    def __init__(self, path, link, download):
         super(SongDownloader, self).__init__()
         self.signals = SongDownloaderSignals()
+        self.download = download
         self.path = path
         self.link = link
 
@@ -29,7 +30,8 @@ class SongDownloader(QRunnable):
         with youtube_dl.YoutubeDL(_ydl_opts_download) as ydl:
             try:
                 info = ydl.extract_info(
-                    self.link, download=True, extra_info={"error": False})
+                    self.link, download=self.download, extra_info={"error": False}
+                )
                 self.signals.finished.emit(info)
             except Exception as e:
                 self.signals.finished.emit({"error": True, "desc": e})

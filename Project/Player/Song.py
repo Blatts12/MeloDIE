@@ -6,15 +6,16 @@ from ..Utils.Downloader import *
 
 
 class Song:
-    def __init__(self, name, ytId, playlistPath):
+    def __init__(self, name, ytId, playlistPath, download):
         self.name = name
         self.youtubeId = ytId
-
+        self.audioUrl = None
+        self.shouldDownload = download
         self.downloaded = False
+        self.urlExtracted = False
         self.error = False
 
-        self.path = self._getFullPath(
-            playlistPath, sanitize_filename(name).strip())
+        self.path = self._getFullPath(playlistPath, sanitize_filename(name).strip())
 
     def _getFullPath(self, playlistPath, sanitizedName):
         path = playlistPath + "\\" + sanitizedName
@@ -31,17 +32,27 @@ class Song:
     def processDownloadedSong(self, info, fsd):
         self.error = info["error"]
         if not self.error:
-            self.downloaded = True
-            self.path += "." + info["ext"]
+            if self.shouldDownload:
+                self.downloaded = True
+                self.path += "." + info["ext"]
+            else:
+                self.urlExtracted = True
+                self.audioUrl = info["url"]
         fsd(self)
 
     def download(self, item, psd, fsd):
         threadpool = QThreadPool.globalInstance()
-        downloader = SongDownloader(self.path, self.getYoutubeLink())
+        downloader = SongDownloader(
+            self.path, self.getYoutubeLink(), self.shouldDownload
+        )
         downloader.signals.progress.connect(lambda info: psd(item, info))
         downloader.signals.finished.connect(
-            lambda info: self.processDownloadedSong(info, fsd))
+            lambda info: self.processDownloadedSong(info, fsd)
+        )
         threadpool.start(downloader)
 
     def getMediaContent(self):
-        return QMediaContent(QUrl.fromLocalFile(self.path))
+        if self.shouldDownload or self.downloaded:
+            return QMediaContent(QUrl.fromLocalFile(self.path))
+        else:
+            return QMediaContent(QUrl(self.audioUrl))

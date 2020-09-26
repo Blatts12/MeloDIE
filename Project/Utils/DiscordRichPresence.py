@@ -3,6 +3,7 @@ from pypresence import Presence
 
 class DRP:
     def __init__(self):
+        self.working = False
         self.playlist = "None"
         self.title = "None"
         self.time = "00:00"
@@ -26,12 +27,17 @@ class DRP:
         self.setStates()
 
     def start(self):
-        self.DRP.connect()
-        self.setStates()
+        try:
+            self.DRP.connect()
+            self.setStates()
+            self.working = True
+        except Exception as e:
+            pass
 
     def setStates(self):
-        self.DRP.update(
-            state=self.playState + ": " + str(self.time),
-            details="[" + self.playlist + "] " + self.title,
-            large_image="logo2",
-        )
+        if self.working:
+            self.DRP.update(
+                state=self.playState + ": " + str(self.time),
+                details="[" + self.playlist + "] " + self.title,
+                large_image="logo2",
+            )

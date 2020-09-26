@@ -25,11 +25,13 @@ if sys.platform == "win32":
 app = QApplication(sys.argv)
 app.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
 
+
 mainLayout = MainLayout()
 playlistListLayout = PlaylistListLayout()
 songLayout = SongLayout()
 songListLayout = SongListLayout()
 drp = DRP()
+download = False
 
 
 class MainWindow(QMainWindow):
@@ -128,7 +130,7 @@ class MainWindow(QMainWindow):
         if temp == None:
             return
         self.selectedPlaylistName = temp[1]
-        playlist = Playlist(temp[1], temp[2])
+        playlist = Playlist(temp[1], temp[2], download)
         playlist.extractInfo(self.finishPlaylistExtraction)
 
     def selectHighlightedSong(self):
@@ -225,7 +227,9 @@ class MainWindow(QMainWindow):
 
     def addPlaylistFromClipboard(self):
         data = QApplication.clipboard().text()
-        idPattern = re.compile(r"https:\/\/www\.youtu.+list=(PL[0-9A-Za-z-_]{32})")
+        # https://www.youtube.com/playlist?list=OLAK5uy_nq9PSQZCORK_TXwQuv6OL6pFIR_JuMfNM
+        print(data)
+        idPattern = re.compile(r"https:\/\/www\.youtu.+list=(P?L?[0-9A-Za-z-_]{32})")
         if idPattern.match(data) == None:
             return
 
@@ -308,7 +312,7 @@ class MainWindow(QMainWindow):
         self.playSong(song, songItem)
 
     def playSong(self, song, songItem):
-        if song.downloaded == False:
+        if not song.downloaded and not song.urlExtracted:
             song.download(songItem, self.progressSongDownload, self.finishSongDownload)
         else:
             songLayout.songInfoLayout.setTitle(song.name)
