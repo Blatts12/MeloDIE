@@ -1,4 +1,4 @@
-import youtube_dl
+import yt_dlp
 from PySide2.QtCore import Signal, Slot, QObject, QRunnable
 
 
@@ -19,7 +19,7 @@ class PlaylistInfoExtarctor(QRunnable):
 
     @Slot()
     def run(self):
-        with youtube_dl.YoutubeDL(self._ydl_opts_info) as ydl:
+        with yt_dlp.YoutubeDL(self._ydl_opts_info) as ydl:
             try:
                 info = ydl.extract_info(self.link, download=False)
                 info["error"] = False
@@ -45,7 +45,7 @@ class SongAudioLinkExtractor(QRunnable):
 
     @Slot()
     def run(self):
-        with youtube_dl.YoutubeDL(self._ydl_opts_info) as ydl:
+        with yt_dlp.YoutubeDL(self._ydl_opts_info) as ydl:
             try:
                 info = ydl.extract_info(self.link, download=False)
                 info["error"] = False

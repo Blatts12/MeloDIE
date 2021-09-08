@@ -1,4 +1,4 @@
-import youtube_dl
+import yt_dlp
 from PySide2.QtCore import Signal, Slot, QObject, QRunnable
 
 
@@ -25,7 +25,7 @@ class SongDownloader(QRunnable):
             # "quiet": True
         }
 
-        with youtube_dl.YoutubeDL(_ydl_opts_download) as ydl:
+        with yt_dlp.YoutubeDL(_ydl_opts_download) as ydl:
             try:
                 info = ydl.extract_info(
                     self.link, download=self.download, extra_info={"error": False}

@@ -1,9 +1,9 @@
 import random
 import os
 from pathlib import Path
-from youtube_dl.utils import sanitize_filename
-from ..Utils.Extractor import PlaylistInfoExtarctor
 from PySide2.QtCore import QThreadPool
+from yt_dlp.utils import sanitize_filename
+from ..Utils.Extractor import PlaylistInfoExtarctor
 from .Song import Song
 
 
