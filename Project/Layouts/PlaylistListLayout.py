@@ -1,11 +1,10 @@
-from PySide2.QtWidgets import *
-from PySide2.QtCore import *
-from PySide2.QtGui import *
+from PySide2.QtWidgets import QListWidgetItem, QListWidget, QVBoxLayout
+from PySide2.QtCore import Qt
 from ..Database.Database import PlaylistDb
 
 
 class PlaylistItem(QListWidgetItem):
-    def __init__(self, playlist, listWidget, *args, **kwargs):
+    def __init__(self, playlist, listWidget):
         self.playlist = playlist
         super(PlaylistItem, self).__init__(playlist[1], listWidget)
 
@@ -43,14 +42,14 @@ class PlaylistListLayout(QVBoxLayout):
         self.listWidget.clear()
         self.playlists = PlaylistDb.getPlaylists()
 
-        if (previousPlaylist == None):
+        if previousPlaylist is None:
             for playlist in self.playlists:
                 PlaylistItem(playlist, self.listWidget)
         else:
             indexTemp = 0
             for playlist in self.playlists:
                 PlaylistItem(playlist, self.listWidget)
-                if (playlist[2] == previousPlaylist.link):
+                if playlist[2] == previousPlaylist.link:
                     self.indexSelected = indexTemp
                     self.listWidget.item(self.indexSelected).selectPlaylist()
                 indexTemp += 1

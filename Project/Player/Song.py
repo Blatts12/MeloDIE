@@ -1,8 +1,8 @@
 import glob
 from youtube_dl.utils import sanitize_filename
-from PySide2.QtCore import *
-from PySide2.QtMultimedia import *
-from ..Utils.Downloader import *
+from PySide2.QtCore import QThreadPool, QUrl
+from PySide2.QtMultimedia import QMediaContent
+from ..Utils.Downloader import SongDownloader
 
 
 class Song:

@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from youtube_dl.utils import sanitize_filename
 from ..Utils.Extractor import PlaylistInfoExtarctor
-from PySide2.QtCore import *
+from PySide2.QtCore import QThreadPool
 from .Song import Song
 
 
@@ -22,8 +22,8 @@ class Playlist:
         self.error = False
 
     def _setPath(self):
-        path = "C:/_Muzyka/" + sanitize_filename(self.name).strip()
-        # path = str(Path.home()) + "/Music/" + sanitize_filename(self.name).strip()
+        # path = "C:/_Muzyka/" + sanitize_filename(self.name).strip()
+        path = str(Path.home()) + "/Music/" + sanitize_filename(self.name).strip()
 
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -36,7 +36,7 @@ class Playlist:
         return self.songs[index]
 
     def nextSong(self, zeroLoop):
-        if zeroLoop == True:
+        if zeroLoop:
             self.loop = 0
 
         if self.loop == 0 or self.indexCurrent == -1:

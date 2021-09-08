@@ -1,4 +1,4 @@
-from PySide2.QtMultimedia import *
+from PySide2.QtMultimedia import QMediaPlayer
 
 
 class MediaPlayer(QMediaPlayer):

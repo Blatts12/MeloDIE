@@ -31,7 +31,7 @@ class DRP:
             self.DRP.connect()
             self.setStates()
             self.working = True
-        except Exception as e:
+        except Exception as e:  # ?
             pass
 
     def setStates(self):
