@@ -3,10 +3,10 @@ import os
 import re
 import qdarkstyle
 import ctypes
-from PySide2.QtWidgets import *
-from PySide2.QtGui import *
-from PySide2.QtMultimedia import *
-from PySide2.QtCore import *
+from PySide2.QtWidgets import QApplication, QMainWindow, QWidget
+from PySide2.QtGui import QIcon
+from PySide2.QtMultimedia import QMediaPlayer
+from PySide2.QtCore import QRect, QThreadPool, Qt
 from Project.Layouts.MainLayout import MainLayout
 from Project.Layouts.PlaylistListLayout import PlaylistListLayout
 from Project.Layouts.SongListLayout import SongListLayout
@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
 
     def selectHighlightedPlaylist(self):
         temp = playlistListLayout.selectHighlighted()
-        if temp == None:
+        if temp is None:
             return
         self.selectedPlaylistName = temp[1]
         playlist = Playlist(temp[1], temp[2], download)
@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
 
     def selectHighlightedSong(self):
         pack = songListLayout.selectHighlighted()
-        if pack == None:
+        if pack is None:
             return
         songIndex, songItem = pack
 
@@ -166,27 +166,27 @@ class MainWindow(QMainWindow):
             self.savedVolume = -1
 
     def loopUp(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopUp())
 
     def loopDown(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopDown())
 
     def loopNo(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopNo())
 
     def loopInf(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
 
     def loopSwitch(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         if self.playlist.loop == -1:
             songLayout.loopLayout.setNewLoop(self.playlist.loopNo())
@@ -194,24 +194,24 @@ class MainWindow(QMainWindow):
             songLayout.loopLayout.setNewLoop(self.playlist.loopInf())
 
     def shuffle(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         self.playlist.shuffle()
         songListLayout.setSongList(self.playlist.songs)
         self.nextSong(zeroLoop=True)
 
     def seek(self, byValue):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         self.player.setPosition(self.player.position() + byValue)
 
     def seekNextSong(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         self.nextSong(zeroLoop=True)
 
     def seekPrevSong(self):
-        if self.playlist == None:
+        if self.playlist is None:
             return
         self.prevSong()
 
@@ -227,10 +227,8 @@ class MainWindow(QMainWindow):
 
     def addPlaylistFromClipboard(self):
         data = QApplication.clipboard().text()
-        # https://www.youtube.com/playlist?list=OLAK5uy_nq9PSQZCORK_TXwQuv6OL6pFIR_JuMfNM
-        print(data)
         idPattern = re.compile(r"https:\/\/www\.youtu.+list=(P?L?[0-9A-Za-z-_]{32})")
-        if idPattern.match(data) == None:
+        if idPattern.match(data) is None:
             return
 
         threadpool = QThreadPool.globalInstance()
@@ -240,7 +238,7 @@ class MainWindow(QMainWindow):
 
     def removeHighlightedPlaylist(self):
         playlistTemp = playlistListLayout.getHighlighted()
-        if playlistTemp == None:
+        if playlistTemp is None:
             return
 
         PlaylistDb.removePlaylist(playlistTemp[2])

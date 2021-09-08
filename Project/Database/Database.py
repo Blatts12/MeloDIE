@@ -10,7 +10,10 @@ class PlaylistDatabase:
         with sqlite3.connect(dbPath) as conn:
             c = conn.cursor()
             c.execute(
-                "CREATE TABLE IF NOT EXISTS Playlists(id INTEGER PRIMARY KEY, name TEXT NOT NULL, link TEXT NOT NULL UNIQUE)"
+                (
+                    "CREATE TABLE IF NOT EXISTS Playlists(id INTEGER PRIMARY KEY,"
+                    " name TEXT NOT NULL, link TEXT NOT NULL UNIQUE)"
+                )
             )
             conn.commit()
 
