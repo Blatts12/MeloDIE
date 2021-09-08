@@ -227,7 +227,7 @@ class MainWindow(QMainWindow):
 
     def addPlaylistFromClipboard(self):
         data = QApplication.clipboard().text()
-        idPattern = re.compile(r"https:\/\/www\.youtu.+list=(P?L?[0-9A-Za-z-_]{32})")
+        idPattern = re.compile(r"https:\/\/www\.youtu.+list=([^&]+)")
         if idPattern.match(data) is None:
             return
 
