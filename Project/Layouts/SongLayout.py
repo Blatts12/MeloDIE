@@ -1,7 +1,7 @@
 from PySide2.QtWidgets import QLabel, QSlider, QVBoxLayout, QGridLayout
 from PySide2.QtCore import Qt, QMargins
 from PySide2.QtGui import QFont
-from youtube_dl.downloader.common import FileDownloader
+from yt_dlp.downloader.common import FileDownloader
 
 
 class MyLabel(QLabel):
