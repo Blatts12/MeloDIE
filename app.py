@@ -15,11 +15,10 @@ from Project.Player.Playlist import Playlist
 from Project.Player.MediaPlayer import MediaPlayer
 from Project.Utils.GlobalHotkey import GlobalHotkey
 from Project.Utils.Extractor import PlaylistInfoExtarctor
-from Project.Utils.DiscordRichPresence import DRP
 from Project.Database.Database import PlaylistDb
 
 if sys.platform == "win32":
-    myappid = u"blatts1234.pyytplplayer.101"
+    myappid = u"blatts1234.melodie"
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 app = QApplication(sys.argv)
@@ -30,7 +29,6 @@ mainLayout = MainLayout()
 playlistListLayout = PlaylistListLayout()
 songLayout = SongLayout()
 songListLayout = SongListLayout()
-drp = DRP()
 download = False
 
 
@@ -73,8 +71,6 @@ class MainWindow(QMainWindow):
         self.player.durationChanged.connect(self.updateDuration)
         self.player.positionChanged.connect(self.updatePosition)
 
-        drp.start()
-
     def mediaStatusChanged(self, status):
         if status == QMediaPlayer.EndOfMedia:
             self.nextSong()
@@ -86,7 +82,6 @@ class MainWindow(QMainWindow):
     def updatePosition(self, position):
         timeText = songLayout.songDurationLayout.setNewTime(position / 1000)
         songLayout.songSliderLayout.timeSlider.setValue(position)
-        drp.setTime(timeText)
 
     def finishPlaylistExtraction(self, playlist):
         if playlist.error:
@@ -96,7 +91,6 @@ class MainWindow(QMainWindow):
             self.playlist = playlist
             songListLayout.setSongList(self.playlist.songs)
             self.nextSong(zeroLoop=True)
-            drp.setPlaylist(self.playlist.name)
 
     def finishPlaylistAdding(self, playlistInfo):
         if playlistInfo["error"]:
@@ -120,8 +114,6 @@ class MainWindow(QMainWindow):
         elif song.name == self.selectedSongName:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
-            drp.setTitle(song.name)
-            drp.setPlayState("Playing")
             self.player.setMedia(song.getMediaContent())
             self.player.play()
 
@@ -218,11 +210,9 @@ class MainWindow(QMainWindow):
     def changePlayState(self):
         if self.player.state() == QMediaPlayer.PausedState:
             songLayout.playStateLayout.play()
-            drp.setPlayState("Playing")
             self.player.play()
         else:
             songLayout.playStateLayout.pause()
-            drp.setPlayState("Paused")
             self.player.pause()
 
     def addPlaylistFromClipboard(self):
@@ -315,8 +305,6 @@ class MainWindow(QMainWindow):
         else:
             songLayout.songInfoLayout.setTitle(song.name)
             songLayout.playStateLayout.play()
-            drp.setTitle(song.name)
-            drp.setPlayState("Playing")
             self.player.setMedia(song.getMediaContent())
             self.player.play()
 
