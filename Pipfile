@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 pyside2 = "*"
 qdarkstyle = "*"
-pypresence = "*"
 yt-dlp = "*"
 pynput = "*"
 
